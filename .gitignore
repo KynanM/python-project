@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+
+# Python cache bestanden
+__pycache__/
+*.pyc
+*.pyo
+
+# Database bestanden
+*.db
+
+# Settings bestand met gevoelige data
+settings.py
+
+# Spyder project bestanden
+.spyproject/
