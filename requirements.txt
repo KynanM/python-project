@@ -22,7 +22,7 @@ Pygments==2.19.2
 python-dateutil==2.9.0.post0
 pyzmq==27.1.0
 six==1.17.0
-spyder-kernels==3.0.5
+spyder-kernels==3.1.2
 stack-data==0.6.3
 tornado==6.5.4
 traitlets==5.14.3
