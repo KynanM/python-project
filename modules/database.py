@@ -3,7 +3,10 @@ from settings import DATABASE_PATH
 
 def get_connection():
     """Maakt verbinding met de SQLite database."""
-    return sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect(DATABASE_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
 
 def create_tables():
     """Maakt de tabellen aan als ze nog niet bestaan."""
@@ -20,19 +23,20 @@ def create_tables():
             datum_gepost TEXT
         )
     """)
-
+    
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS prestaties (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            video_id INTEGER NOT NULL,
-            datum_gemeten TEXT NOT NULL,
-            views INTEGER NOT NULL,
-            likes INTEGER NOT NULL,
-            comments INTEGER NOT NULL,
-            shares INTEGER NOT NULL,
-            FOREIGN KEY (video_id) REFERENCES videos(id)
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS prestaties (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        video_id INTEGER NOT NULL,
+        datum_gemeten TEXT NOT NULL,
+        views INTEGER NOT NULL,
+        likes INTEGER NOT NULL,
+        comments INTEGER NOT NULL,
+        shares INTEGER NOT NULL,
+        FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE,
+        UNIQUE(video_id, datum_gemeten)
+    )
+""")
 
     conn.commit()
     conn.close()
