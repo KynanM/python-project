@@ -1,2 +1,2 @@
 # settings_example.py
-DATABASE_PATH = "data/video_tracker.db"
+DATABASE_PATH = "data/sample_data.db"
