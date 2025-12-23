@@ -1,77 +1,67 @@
 # AI Video Tracker 📹📊
 
-De **AI Video Tracker** is een Python Command Line Interface (CLI) applicatie ontworpen voor content creators om hun video-productieproces en de bijbehorende prestaties (views, likes, etc.) centraal te beheren. De applicatie maakt gebruik van een SQLite database en biedt de mogelijkheid om gegevens te exporteren naar gestylede Excel-rapporten.
+De **AI Video Tracker** is een Python Command Line Interface (CLI) applicatie waarmee content creators hun video-productie en prestaties (views, likes, etc.) centraal beheren. De app gebruikt een SQLite database en kan gestylede rapporten exporteren naar Excel.
 
 ## 🚀 Functionaliteiten
 
-- **Video Management (CRUD)**: Volledige controle over je video-database (Aanmaken, Lezen, Updaten, Verwijderen).
-- **Performance Tracking**: Houd statistieken bij zoals views, likes, comments en shares voor elke video op specifieke tijdstippen.
-- **Data Relaties**: Maakt gebruik van een relationele database-structuur waarbij prestaties gekoppeld zijn aan video's via Foreign Keys.
-- **Excel Export**: Genereer professionele Excel-overzichten met automatische opmaak en kolombreedte.
-- **Object-Oriented Design**: De applicatie is opgebouwd met Python classes (`Video` en `Prestatie`) voor een schone en herbruikbare code-architectuur.
+- **Video & Performance Management**: Volledige CRUD-ondersteuning voor video's en hun statistieken [file:1].
+- **Data Relaties**: Gekoppelde tabellen via Foreign Keys (één video kan meerdere metingen hebben) [web:7].
+- **Excel Export**: Genereer rapporten met automatische opmaak in een aparte `exports/` map [web:140].
+- **Object-Oriented**: Gebruik van `Video` en `Prestatie` classes voor gestructureerde dataverwerking [file:1].
 
-## 🛠️ Installatie & Voorbereiding
+## 🛠️ Snelle Start (Voor de Docent)
 
-Volg deze stappen om de applicatie lokaal op te zetten:
+Volg deze stappen om de applicatie met de **voorbeeldgegevens** direct te testen:
 
-1. **Clone de repository**:
+1. **Clone & Navigeer**:
 
 git clone https://github.com/KynanM/python-project.git
 cd python-project
 
 
-2. **Maak een virtuele omgeving aan (venv)**:
+2. **Setup Omgeving**:
 
 python -m venv venv
 
-
-3. **Activeer de virtuele omgeving**:
-- **Windows**: `.\venv\Scripts\activate`
-- **macOS/Linux**: `source venv/bin/activate`
-
-4. **Installeer de benodigde packages**:
-
+Activeer (Windows): .\venv\Scripts\activate
+Activeer (Mac/Linux): source venv/bin/activate
 pip install -r requirements.txt
 
 
-## ⚙️ Configuratie (Settings)
+3. **Configuratie**:
+- Maak een bestand `settings.py` aan in de hoofdmap.
+- Kopieer de volgende regel erin om de voorbeelddata te gebruiken:
+  ```
+  DATABASE_PATH = "data/sample_data.db"
+  ```
 
-Om de veiligheid en flexibiliteit te waarborgen, maakt de applicatie gebruik van een extern instellingenbestand dat niet in de Git-repository wordt opgeslagen.
-
-1. Zoek het bestand `settings_example.py` in de hoofdmap.
-2. Kopieer dit bestand en hernoem het naar `settings.py`.
-3. In `settings.py` kun je het pad naar de database aanpassen (standaard in de map `data/`).
-
-**Let op:** Het bestand `settings.py` wordt genegeerd door Git via het `.gitignore` bestand om te voorkomen dat lokale paden of gevoelige data online komen te staan.
-
-## 💻 Gebruik
-
-Start de applicatie door het hoofdbestand uit te voeren:
+4. **Starten**:
 
 python main.py
 
 
-Bij de eerste start zal de applicatie automatisch de database (`video_tracker.db`) en de benodigde tabellen aanmaken in de geconfigureerde map. Navigeer door het programma met de cijfers in het menu.
+## ⚙️ Instellingen (settings.py)
+De applicatie kijkt naar `settings.py` voor het databasepad. 
+- Gebruik `data/sample_data.db` voor de evaluatie (bevat reeds data) [file:1].
+
+*Let op: `settings.py` staat in de `.gitignore` en wordt niet geüpload naar GitHub.* [file:1]
 
 ## 📁 Projectstructuur
 
 python-project/
-├── data/ # Locatie van de SQLite database
-├── modules/ # Python packages en modules
-│ ├── database.py # Database connectie en init
-│ ├── models.py # Class definities (Video, Prestatie)
-│ ├── video_DA.py # Data Access voor Video's
-│ ├── prestatie_DA.py # Data Access voor Prestaties
-│ └── excel_export.py # Excel export functionaliteit
-├── main.py # Startpunt van de applicatie
-├── settings.py # Lokale configuratie (niet in git)
-├── settings_example.py # Voorbeeld voor configuratie
-├── requirements.txt # Externe dependencies (openpyxl)
-└── .gitignore # Bestanden uitgesloten van versiebeheer
+├── data/ # Bevat sample_data.db (voorbeeldgegevens)
+├── exports/ # Bestemming voor Excel-rapporten (automatisch aangemaakt)
+├── modules/ # Logica opgesplitst in packages
+│ ├── database.py # Database connectie & init
+│ ├── models.py # Classes (Video, Prestatie)
+│ ├── video_DataAccess.py # CRUD voor video's
+│ ├── prestatie_DataAccess.py # CRUD voor prestaties
+│ └── excel_export.py # Excel export engine
+├── main.py # Hoofdprogramma (CLI Menu)
+├── settings_example.py # Sjabloon voor instellingen
+├── requirements.txt # Dependencies (openpyxl)
+└── .gitignore # Git uitsluitingen (venv, settings, etc.)
 
 
-## 📝 Licentie & Auteur
-
-Ontwikkeld als onderdeel van de Python Project opdracht. 
-- **Auteur**: KynanM
-- **Expertise**: Python 3.x, SQLite, Git workflow.
+## 📝 Auteur
+Ontwikkeld door **KynanM** als eindopdracht voor de cursus Python [file:1].
