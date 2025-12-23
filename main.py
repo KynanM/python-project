@@ -105,7 +105,7 @@ def update_video_flow():
         print("❌ Geen video gevonden met dit id.")
         return
 
-    print(f"\n📝 Huidige waarden:")
+    print("\n📝 Huidige waarden:")
     print(f"  Titel: {huidige.titel}")
     print(f"  Platform: {huidige.platform}")
     print(f"  Status: {huidige.status}")
@@ -211,7 +211,7 @@ def update_prestatie_flow():
         print("❌ Geen prestatie gevonden met dit id.")
         return
 
-    print(f"\n📝 Huidige waarden:")
+    print("\n📝 Huidige waarden:")
     print(f"  Video: {huidige.video_titel}")
     print(f"  Datum gemeten: {huidige.datum_gemeten}")
     print(f"  Views: {huidige.views}")
