@@ -1,5 +1,10 @@
-import sqlite3
+# main.py
+"""
+AI Video Tracker - Main applicatie
+Command-line interface voor video- en prestatie management.
+"""
 
+import sqlite3
 from modules.database import create_tables
 from modules.video_DataAccess import (
     video_toevoegen,
@@ -8,7 +13,6 @@ from modules.video_DataAccess import (
     video_updaten,
     video_verwijderen
 )
-
 from modules.prestatie_DataAccess import (
     prestatie_toevoegen,
     prestaties_ophalen,
@@ -16,20 +20,34 @@ from modules.prestatie_DataAccess import (
     prestatie_updaten,
     prestatie_verwijderen
 )
+from modules.excel_export import (
+    exporteer_videos_excel,
+    exporteer_prestaties_excel,
+    exporteer_alles_excel
+)
 
 
 def toon_menu():
     """Toont het hoofdmenu in de terminal."""
-    print("\n--- AI Video Tracker ---")
+    print("\n" + "=" * 50)
+    print("--- AI VIDEO TRACKER ---".center(50))
+    print("=" * 50)
+    print("\n📹 VIDEO BEHEER")
     print("1. Video toevoegen")
     print("2. Videos tonen")
     print("3. Video updaten")
     print("4. Video verwijderen")
+    print("\n📊 PRESTATIE BEHEER")
     print("5. Prestatie toevoegen")
     print("6. Prestaties tonen")
     print("7. Prestatie updaten")
     print("8. Prestatie verwijderen")
-    print("0. Stoppen")
+    print("\n💾 EXPORTEREN")
+    print("9. Exporteer videos naar Excel")
+    print("10. Exporteer prestaties naar Excel")
+    print("11. Exporteer ALLES naar Excel")
+    print("\n0. Stoppen")
+    print("=" * 50)
 
 
 def vraag_video_id():
@@ -37,108 +55,113 @@ def vraag_video_id():
     tekst = input("Geef video id: ").strip()
     if tekst.isdigit():
         return int(tekst)
+    print("❌ Ongeldig ID. Moet een getal zijn.")
     return None
 
 
 def vraag_video_gegevens():
     """Vraagt de gegevens voor een nieuwe video."""
+    print("\n--- Nieuwe video toevoegen ---")
     titel = input("Titel: ").strip()
     platform = input("Platform (TikTok/Instagram/YouTube): ").strip()
     status = input("Status (concept/in_productie/klaar/gepost): ").strip()
     datum_aangemaakt = input("Datum aangemaakt (YYYY-MM-DD): ").strip()
 
     # Minimale validatie (leeg = ongeldig)
-    if titel == "" or platform == "" or status == "" or datum_aangemaakt == "":
+    if not (titel and platform and status and datum_aangemaakt):
+        print("❌ Alle velden zijn verplicht.")
         return None
 
     return titel, platform, status, datum_aangemaakt
 
 
 def toon_videos():
-    """Toont alle videos."""
-    rows = videos_ophalen()
-    if len(rows) == 0:
-        print("Geen videos gevonden.")
+    """Toont alle videos in een geformateerde tabel."""
+    videos = videos_ophalen()  # Krijgt nu Video objecten!
+    
+    if len(videos) == 0:
+        print("\n❌ Geen videos gevonden.")
         return
 
-    print("\nID | Titel | Platform | Status | Aangemaakt | Gepost")
-    print("-" * 60)
-    for row in rows:
-        print(f"{row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]}")
+    print("\n" + "=" * 90)
+    print(f"{'ID':<4} | {'Titel':<20} | {'Platform':<12} | {'Status':<15} | {'Aangemaakt':<12} | {'Gepost':<12}")
+    print("-" * 90)
+    
+    for video in videos:
+        gepost = video.datum_gepost if video.datum_gepost else "-"
+        print(f"{video.id:<4} | {video.titel:<20} | {video.platform:<12} | {video.status:<15} | {video.datum_aangemaakt:<12} | {gepost:<12}")
+    
+    print("=" * 90)
 
 
 def update_video_flow():
     """Afhandeling voor optie 'video updaten'."""
     video_id = vraag_video_id()
     if video_id is None:
-        print("Ongeldig id.")
         return
 
-    huidige = video_ophalen_op_id(video_id)
+    huidige = video_ophalen_op_id(video_id)  # Krijgt nu Video object!
     if huidige is None:
-        print("Geen video gevonden met dit id.")
+        print("❌ Geen video gevonden met dit id.")
         return
 
-    print("\nHuidige waarden:")
-    print(f"{huidige[0]} | {huidige[1]} | {huidige[2]} | {huidige[3]} | {huidige[4]} | {huidige[5]}")
+    print(f"\n📝 Huidige waarden:")
+    print(f"  Titel: {huidige.titel}")
+    print(f"  Platform: {huidige.platform}")
+    print(f"  Status: {huidige.status}")
+    print(f"  Aangemaakt: {huidige.datum_aangemaakt}")
+    print(f"  Gepost: {huidige.datum_gepost if huidige.datum_gepost else '-'}")
 
-    print("\nNieuwe waarden invullen (druk Enter om te behouden).")
-    titel = input(f"Titel [{huidige[1]}]: ").strip()
-    platform = input(f"Platform [{huidige[2]}]: ").strip()
-    status = input(f"Status [{huidige[3]}]: ").strip()
-    datum_aangemaakt = input(f"Datum aangemaakt [{huidige[4]}]: ").strip()
-    datum_gepost = input(f"Datum gepost [{huidige[5]}]: ").strip()
-
-    if titel == "":
-        titel = huidige[1]
-    if platform == "":
-        platform = huidige[2]
-    if status == "":
-        status = huidige[3]
-    if datum_aangemaakt == "":
-        datum_aangemaakt = huidige[4]
-    if datum_gepost == "":
-        datum_gepost = huidige[5]
+    print("\nNieuwe waarden invullen (druk Enter om te behouden):")
+    titel = input(f"Titel [{huidige.titel}]: ").strip() or huidige.titel
+    platform = input(f"Platform [{huidige.platform}]: ").strip() or huidige.platform
+    status = input(f"Status [{huidige.status}]: ").strip() or huidige.status
+    datum_aangemaakt = input(f"Datum aangemaakt [{huidige.datum_aangemaakt}]: ").strip() or huidige.datum_aangemaakt
+    datum_gepost = input(f"Datum gepost [{huidige.datum_gepost or '-'}]: ").strip() or huidige.datum_gepost
 
     video_updaten(video_id, titel, platform, status, datum_aangemaakt, datum_gepost)
-    print("Video bijgewerkt.")
+    print("✅ Video bijgewerkt.")
 
 
 def delete_video_flow():
     """Afhandeling voor optie 'video verwijderen'."""
     video_id = vraag_video_id()
     if video_id is None:
-        print("Ongeldig id.")
         return
 
-    huidige = video_ophalen_op_id(video_id)
+    huidige = video_ophalen_op_id(video_id)  # Krijgt nu Video object!
     if huidige is None:
-        print("Geen video gevonden met dit id.")
+        print("❌ Geen video gevonden met dit id.")
         return
 
-    bevestig = input(f"Ben je zeker dat je '{huidige[1]}' wil verwijderen? (j/n): ").strip().lower()
+    bevestig = input(f"\n⚠️  Ben je zeker dat je '{huidige.titel}' wil verwijderen? (j/n): ").strip().lower()
     if bevestig == "j":
         video_verwijderen(video_id)
-        print("Video verwijderd.")
+        print("✅ Video verwijderd.")
     else:
-        print("Verwijderen geannuleerd.")
+        print("❌ Verwijderen geannuleerd.")
 
 
 def vraag_prestatie_id():
+    """Vraagt een prestatie id en zet het om naar int als het geldig is."""
     tekst = input("Geef prestatie id: ").strip()
     if tekst.isdigit():
         return int(tekst)
+    print("❌ Ongeldig ID. Moet een getal zijn.")
     return None
 
 
 def vraag_prestatie_gegevens():
+    """Vraagt de gegevens voor een nieuwe prestatie."""
+    print("\n--- Nieuwe prestatie toevoegen ---")
     video_id_txt = input("Video id: ").strip()
     if not video_id_txt.isdigit():
+        print("❌ Video ID moet een getal zijn.")
         return None
 
     video_id = int(video_id_txt)
     if video_ophalen_op_id(video_id) is None:
-        print("Deze video bestaat niet. Kies een bestaand video id via 'Videos tonen'.")
+        print(f"❌ Video met ID {video_id} bestaat niet. Kies een bestaand video id via 'Videos tonen'.")
         return None
 
     datum_gemeten = input("Datum gemeten (YYYY-MM-DD): ").strip()
@@ -148,117 +171,105 @@ def vraag_prestatie_gegevens():
     comments_txt = input("Comments: ").strip()
     shares_txt = input("Shares: ").strip()
 
-    if datum_gemeten == "":
+    if not datum_gemeten:
+        print("❌ Datum is verplicht.")
         return None
+    
     if not (views_txt.isdigit() and likes_txt.isdigit() and comments_txt.isdigit() and shares_txt.isdigit()):
+        print("❌ Views, Likes, Comments en Shares moeten getallen zijn.")
         return None
 
-    views = int(views_txt)
-    likes = int(likes_txt)
-    comments = int(comments_txt)
-    shares = int(shares_txt)
-
-    return video_id, datum_gemeten, views, likes, comments, shares
+    return video_id, datum_gemeten, int(views_txt), int(likes_txt), int(comments_txt), int(shares_txt)
 
 
 def toon_prestaties():
-    rows = prestaties_ophalen()
-    if len(rows) == 0:
-        print("Geen prestaties gevonden.")
+    """Toont alle prestaties in een geformateerde tabel."""
+    prestaties = prestaties_ophalen()  # Krijgt nu Prestatie objecten!
+    
+    if len(prestaties) == 0:
+        print("\n❌ Geen prestaties gevonden.")
         return
 
-    print("\nID | Video titel | Datum | Views | Likes | Comments | Shares")
-    print("-" * 70)
-    for row in rows:
-        print(f"{row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]}")
+    print("\n" + "=" * 100)
+    print(f"{'ID':<4} | {'Video Titel':<25} | {'Datum':<12} | {'Views':<8} | {'Likes':<8} | {'Comments':<10} | {'Shares':<8}")
+    print("-" * 100)
+    
+    for prestatie in prestaties:
+        print(f"{prestatie.id:<4} | {prestatie.video_titel:<25} | {prestatie.datum_gemeten:<12} | {prestatie.views:<8} | {prestatie.likes:<8} | {prestatie.comments:<10} | {prestatie.shares:<8}")
+    
+    print("=" * 100)
 
 
 def update_prestatie_flow():
+    """Afhandeling voor optie 'prestatie updaten'."""
     prestatie_id = vraag_prestatie_id()
     if prestatie_id is None:
-        print("Ongeldig id.")
         return
 
-    huidige = prestatie_ophalen_op_id(prestatie_id)
+    huidige = prestatie_ophalen_op_id(prestatie_id)  # Krijgt nu Prestatie object!
     if huidige is None:
-        print("Geen prestatie gevonden met dit id.")
+        print("❌ Geen prestatie gevonden met dit id.")
         return
 
-    print("\nNieuwe waarden invullen (druk Enter om te behouden).")
-    video_id = input(f"Video id [{huidige[1]}]: ").strip()
-    datum = input(f"Datum gemeten [{huidige[2]}]: ").strip()
-    views = input(f"Views [{huidige[3]}]: ").strip()
-    likes = input(f"Likes [{huidige[4]}]: ").strip()
-    comments = input(f"Comments [{huidige[5]}]: ").strip()
-    shares = input(f"Shares [{huidige[6]}]: ").strip()
+    print(f"\n📝 Huidige waarden:")
+    print(f"  Video: {huidige.video_titel}")
+    print(f"  Datum gemeten: {huidige.datum_gemeten}")
+    print(f"  Views: {huidige.views}")
+    print(f"  Likes: {huidige.likes}")
+    print(f"  Comments: {huidige.comments}")
+    print(f"  Shares: {huidige.shares}")
 
-    if video_id == "":
-        video_id = huidige[1]
-    elif video_id.isdigit():
+    print("\nNieuwe waarden invullen (druk Enter om te behouden):")
+    
+    video_id = input(f"Video id [{huidige.video_id}]: ").strip()
+    if video_id and video_id.isdigit():
         video_id = int(video_id)
         if video_ophalen_op_id(video_id) is None:
-            print("Deze video bestaat niet.")
+            print("❌ Deze video bestaat niet.")
             return
     else:
-        print("Ongeldige video id.")
-        return
+        video_id = huidige.video_id if not video_id else None
+        if video_id is None:
+            print("❌ Ongeldige video id.")
+            return
 
-    if datum == "":
-        datum = huidige[2]
+    datum = input(f"Datum gemeten [{huidige.datum_gemeten}]: ").strip() or huidige.datum_gemeten
+    views = input(f"Views [{huidige.views}]: ").strip() or huidige.views
+    likes = input(f"Likes [{huidige.likes}]: ").strip() or huidige.likes
+    comments = input(f"Comments [{huidige.comments}]: ").strip() or huidige.comments
+    shares = input(f"Shares [{huidige.shares}]: ").strip() or huidige.shares
 
-    if views == "":
-        views = huidige[3]
-    elif views.isdigit():
+    # Validatie van numerieke velden
+    try:
         views = int(views)
-    else:
-        print("Ongeldige views.")
-        return
-
-    if likes == "":
-        likes = huidige[4]
-    elif likes.isdigit():
         likes = int(likes)
-    else:
-        print("Ongeldige likes.")
-        return
-
-    if comments == "":
-        comments = huidige[5]
-    elif comments.isdigit():
         comments = int(comments)
-    else:
-        print("Ongeldige comments.")
-        return
-
-    if shares == "":
-        shares = huidige[6]
-    elif shares.isdigit():
         shares = int(shares)
-    else:
-        print("Ongeldige shares.")
+    except ValueError:
+        print("❌ Views, Likes, Comments en Shares moeten getallen zijn.")
         return
 
     prestatie_updaten(prestatie_id, video_id, datum, views, likes, comments, shares)
-    print("Prestatie bijgewerkt.")
+    print("✅ Prestatie bijgewerkt.")
 
 
 def delete_prestatie_flow():
+    """Afhandeling voor optie 'prestatie verwijderen'."""
     prestatie_id = vraag_prestatie_id()
     if prestatie_id is None:
-        print("Ongeldig id.")
         return
 
-    huidige = prestatie_ophalen_op_id(prestatie_id)
+    huidige = prestatie_ophalen_op_id(prestatie_id)  # Krijgt nu Prestatie object!
     if huidige is None:
-        print("Geen prestatie gevonden met dit id.")
+        print("❌ Geen prestatie gevonden met dit id.")
         return
 
-    bevestig = input(f"Ben je zeker dat je prestatie {prestatie_id} wil verwijderen? (j/n): ").strip().lower()
+    bevestig = input(f"\n⚠️  Ben je zeker dat je prestatie {prestatie_id} voor '{huidige.video_titel}' wil verwijderen? (j/n): ").strip().lower()
     if bevestig == "j":
         prestatie_verwijderen(prestatie_id)
-        print("Prestatie verwijderd.")
+        print("✅ Prestatie verwijderd.")
     else:
-        print("Verwijderen geannuleerd.")
+        print("❌ Verwijderen geannuleerd.")
 
 
 def main():
@@ -273,10 +284,9 @@ def main():
         if keuze == "1":
             data = vraag_video_gegevens()
             if data is None:
-                print("Ongeldige invoer.")
                 continue
             video_toevoegen(*data)
-            print("Video toegevoegd.")
+            print("✅ Video toegevoegd.")
 
         elif keuze == "2":
             toon_videos()
@@ -290,15 +300,14 @@ def main():
         elif keuze == "5":
             data = vraag_prestatie_gegevens()
             if data is None:
-                print("Ongeldige invoer.")
                 continue
             try:
                 prestatie_toevoegen(*data)
-                print("Prestatie toegevoegd.")
+                print("✅ Prestatie toegevoegd.")
             except sqlite3.IntegrityError:
-                print("Kon prestatie niet toevoegen (controleer video id en unieke datum).")
+                print("❌ Kon prestatie niet toevoegen (controleer video id en/of unieke datum per video).")
             except sqlite3.OperationalError:
-                print("Database is momenteel vergrendeld. Sluit andere programma's en probeer opnieuw.")
+                print("❌ Database is momenteel vergrendeld. Sluit andere programma's en probeer opnieuw.")
 
         elif keuze == "6":
             toon_prestaties()
@@ -309,10 +318,22 @@ def main():
         elif keuze == "8":
             delete_prestatie_flow()
 
+        elif keuze == "9":
+            bestandsnaam = exporteer_videos_excel()
+            print(f"✅ Videos geëxporteerd naar: {bestandsnaam}")
+
+        elif keuze == "10":
+            bestandsnaam = exporteer_prestaties_excel()
+            print(f"✅ Prestaties geëxporteerd naar: {bestandsnaam}")
+
+        elif keuze == "11":
+            bestandsnaam = exporteer_alles_excel()
+            print(f"✅ Alles geëxporteerd naar: {bestandsnaam}")
+
         elif keuze == "0":
-            print("Programma stopt.")
+            print("\n👋 Programma stopt. Tot ziens!")
         else:
-            print("Ongeldige keuze.")
+            print("❌ Ongeldige keuze. Probeer opnieuw.")
 
 
 if __name__ == "__main__":
