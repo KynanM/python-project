@@ -49,18 +49,20 @@ De applicatie kijkt naar `settings.py` voor het databasepad.
 ## 📁 Projectstructuur
 
 python-project/
-├── data/ # Bevat sample_data.db (voorbeeldgegevens)
-├── exports/ # Bestemming voor Excel-rapporten (automatisch aangemaakt)
-├── modules/ # Logica opgesplitst in packages
-│ ├── database.py # Database connectie & init
-│ ├── models.py # Classes (Video, Prestatie)
-│ ├── video_DataAccess.py # CRUD voor video's
-│ ├── prestatie_DataAccess.py # CRUD voor prestaties
-│ └── excel_export.py # Excel export engine
-├── main.py # Hoofdprogramma (CLI Menu)
-├── settings_example.py # Sjabloon voor instellingen
-├── requirements.txt # Dependencies (openpyxl)
-└── .gitignore # Git uitsluitingen (venv, settings, etc.)
+├── data/                    # Map voor databases (bevat sample_data.db)
+├── exports/                 # Map voor Excel-exports (automatisch aangemaakt)
+├── modules/                 # Python package met alle logica
+│   ├── __init__.py          # Maakt van deze map een package
+│   ├── database.py          # Database connectie & tabel creatie
+│   ├── models.py            # Classes (Video en Prestatie)
+│   ├── video_DataAccess.py     # Database functies voor video's
+│   ├── prestatie_DataAccess.py # Database functies voor prestaties
+│   └── excel_export.py         # Logica voor Excel rapportages
+├── main.py                  # Hoofdmenu van de applicatie (CLI)
+├── settings_example.py      # Voorbeeldinstellingen voor de docent
+├── requirements.txt         # Lijst met externe bibliotheken (openpyxl)
+└── .gitignore               # Vertelt git welke bestanden te negeren (venv, settings.py)
+
 
 
 ## 📝 Auteur
