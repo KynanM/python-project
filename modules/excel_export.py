@@ -1,15 +1,17 @@
 # modules/excel_export.py
 """
 Excel export tool voor het exporteren van video's en prestaties.
-Gebruikt openpyxl voor Excel-bestandenwerk.
+Slaat bestanden automatisch op in de map 'exports/'.
 """
-
+import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from datetime import datetime
 from modules.video_DataAccess import videos_ophalen
 from modules.prestatie_DataAccess import prestaties_ophalen
 
+# De map waarin alle excels worden opgeslagen
+EXPORT_DIR = "exports"
 
 def _format_header(ws, row_num):
     """Formatteer de header-rij met vet lettertype en achtergrondkleur."""
@@ -30,47 +32,39 @@ def _format_header(ws, row_num):
             cell.alignment = alignment
             cell.border = border
 
-
-def exporteer_videos_excel(bestandsnaam=None):
-    """
-    Exporteert alle videos naar een Excel bestand.
+def _prepare_path(bestandsnaam, standaard_prefix):
+    """Zorgt dat de export-map bestaat en geeft het volledige pad terug."""
+    # 1. Maak de map aan als deze nog niet bestaat
+    if not os.path.exists(EXPORT_DIR):
+        os.makedirs(EXPORT_DIR)
     
-    Args:
-        bestandsnaam (str): Optioneel. Naam van het Excel-bestand.
-                           Default: 'export_videos_YYYY-MM-DD.xlsx'
-    
-    Returns:
-        str: Naam van het aangemaakte bestand.
-    """
+    # 2. Bepaal standaard bestandsnaam indien nodig
     if bestandsnaam is None:
         datum = datetime.now().strftime("%Y-%m-%d")
-        bestandsnaam = f"export_videos_{datum}.xlsx"
+        bestandsnaam = f"{standaard_prefix}_{datum}.xlsx"
     
-    # Haal alle videos op (nu Video objecten!)
+    # 3. Koppel de map aan de bestandsnaam
+    return os.path.join(EXPORT_DIR, bestandsnaam)
+
+def exporteer_videos_excel(bestandsnaam=None):
+    """Exporteert alle videos naar een Excel bestand in de exports map."""
+    volledig_pad = _prepare_path(bestandsnaam, "export_videos")
+    
     videos = videos_ophalen()
-    
-    # Maak nieuw Excel-werkboek
     wb = Workbook()
     ws = wb.active
     ws.title = "Videos"
     
-    # Header rij
     headers = ["ID", "Titel", "Platform", "Status", "Datum Aangemaakt", "Datum Gepost"]
     ws.append(headers)
     _format_header(ws, 1)
     
-    # Voeg video-data toe
     for video in videos:
         ws.append([
-            video.id,
-            video.titel,
-            video.platform,
-            video.status,
-            video.datum_aangemaakt,
-            video.datum_gepost if video.datum_gepost else "-"
+            video.id, video.titel, video.platform, video.status,
+            video.datum_aangemaakt, video.datum_gepost if video.datum_gepost else "-"
         ])
     
-    # Breid kolombreedte automatisch uit
     for column in ws.columns:
         max_length = 0
         column_letter = column[0].column_letter
@@ -78,56 +72,31 @@ def exporteer_videos_excel(bestandsnaam=None):
             try:
                 if len(str(cell.value)) > max_length:
                     max_length = len(str(cell.value))
-            except:
-                pass
+            except: pass
         ws.column_dimensions[column_letter].width = max_length + 2
     
-    # Bewaar bestand
-    wb.save(bestandsnaam)
-    return bestandsnaam
-
+    wb.save(volledig_pad)
+    return volledig_pad
 
 def exporteer_prestaties_excel(bestandsnaam=None):
-    """
-    Exporteert alle prestaties (metrics) naar een Excel bestand.
+    """Exporteert alle prestaties naar een Excel bestand in de exports map."""
+    volledig_pad = _prepare_path(bestandsnaam, "export_prestaties")
     
-    Args:
-        bestandsnaam (str): Optioneel. Naam van het Excel-bestand.
-                           Default: 'export_prestaties_YYYY-MM-DD.xlsx'
-    
-    Returns:
-        str: Naam van het aangemaakte bestand.
-    """
-    if bestandsnaam is None:
-        datum = datetime.now().strftime("%Y-%m-%d")
-        bestandsnaam = f"export_prestaties_{datum}.xlsx"
-    
-    # Haal alle prestaties op (nu Prestatie objecten!)
     prestaties = prestaties_ophalen()
-    
-    # Maak nieuw Excel-werkboek
     wb = Workbook()
     ws = wb.active
     ws.title = "Prestaties"
     
-    # Header rij
     headers = ["ID", "Video Titel", "Datum Gemeten", "Views", "Likes", "Comments", "Shares"]
     ws.append(headers)
     _format_header(ws, 1)
     
-    # Voeg prestatie-data toe
     for prestatie in prestaties:
         ws.append([
-            prestatie.id,
-            prestatie.video_titel,
-            prestatie.datum_gemeten,
-            prestatie.views,
-            prestatie.likes,
-            prestatie.comments,
-            prestatie.shares
+            prestatie.id, prestatie.video_titel, prestatie.datum_gemeten,
+            prestatie.views, prestatie.likes, prestatie.comments, prestatie.shares
         ])
     
-    # Breid kolombreedte automatisch uit
     for column in ws.columns:
         max_length = 0
         column_letter = column[0].column_letter
@@ -135,93 +104,41 @@ def exporteer_prestaties_excel(bestandsnaam=None):
             try:
                 if len(str(cell.value)) > max_length:
                     max_length = len(str(cell.value))
-            except:
-                pass
+            except: pass
         ws.column_dimensions[column_letter].width = max_length + 2
     
-    # Voeg aantal rijen toe in sheet naam
-    wb.save(bestandsnaam)
-    return bestandsnaam
-
+    wb.save(volledig_pad)
+    return volledig_pad
 
 def exporteer_alles_excel(bestandsnaam=None):
-    """
-    Exporteert ALLES (videos en prestaties) naar één Excel bestand met 2 sheets.
-    
-    Args:
-        bestandsnaam (str): Optioneel. Naam van het Excel-bestand.
-                           Default: 'export_compleet_YYYY-MM-DD.xlsx'
-    
-    Returns:
-        str: Naam van het aangemaakte bestand.
-    """
-    if bestandsnaam is None:
-        datum = datetime.now().strftime("%Y-%m-%d")
-        bestandsnaam = f"export_compleet_{datum}.xlsx"
+    """Exporteert ALLES naar één Excel bestand in de exports map."""
+    volledig_pad = _prepare_path(bestandsnaam, "export_compleet")
     
     videos = videos_ophalen()
     prestaties = prestaties_ophalen()
     
-    # Maak werkboek met 2 sheets
     wb = Workbook()
-    wb.remove(wb.active)  # Verwijder de default lege sheet
+    wb.remove(wb.active)
     
     # SHEET 1: Videos
-    ws_videos = wb.create_sheet("Videos")
-    headers_videos = ["ID", "Titel", "Platform", "Status", "Datum Aangemaakt", "Datum Gepost"]
-    ws_videos.append(headers_videos)
-    _format_header(ws_videos, 1)
-    
-    for video in videos:
-        ws_videos.append([
-            video.id,
-            video.titel,
-            video.platform,
-            video.status,
-            video.datum_aangemaakt,
-            video.datum_gepost if video.datum_gepost else "-"
-        ])
-    
-    # Kolombreedte Videos
-    for column in ws_videos.columns:
-        max_length = 0
-        column_letter = column[0].column_letter
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        ws_videos.column_dimensions[column_letter].width = max_length + 2
+    ws_v = wb.create_sheet("Videos")
+    ws_v.append(["ID", "Titel", "Platform", "Status", "Datum Aangemaakt", "Datum Gepost"])
+    _format_header(ws_v, 1)
+    for v in videos:
+        ws_v.append([v.id, v.titel, v.platform, v.status, v.datum_aangemaakt, v.datum_gepost or "-"])
     
     # SHEET 2: Prestaties
-    ws_prestaties = wb.create_sheet("Prestaties")
-    headers_prestaties = ["ID", "Video Titel", "Datum Gemeten", "Views", "Likes", "Comments", "Shares"]
-    ws_prestaties.append(headers_prestaties)
-    _format_header(ws_prestaties, 1)
+    ws_p = wb.create_sheet("Prestaties")
+    ws_p.append(["ID", "Video Titel", "Datum Gemeten", "Views", "Likes", "Comments", "Shares"])
+    _format_header(ws_p, 1)
+    for p in prestaties:
+        ws_p.append([p.id, p.video_titel, p.datum_gemeten, p.views, p.likes, p.comments, p.shares])
     
-    for prestatie in prestaties:
-        ws_prestaties.append([
-            prestatie.id,
-            prestatie.video_titel,
-            prestatie.datum_gemeten,
-            prestatie.views,
-            prestatie.likes,
-            prestatie.comments,
-            prestatie.shares
-        ])
-    
-    # Kolombreedte Prestaties
-    for column in ws_prestaties.columns:
-        max_length = 0
-        column_letter = column[0].column_letter
-        for cell in column:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        ws_prestaties.column_dimensions[column_letter].width = max_length + 2
-    
-    wb.save(bestandsnaam)
-    return bestandsnaam
+    # Automatische kolombreedte voor beide sheets
+    for ws in wb.worksheets:
+        for column in ws.columns:
+            max_len = max((len(str(cell.value)) for cell in column if cell.value), default=0)
+            ws.column_dimensions[column[0].column_letter].width = max_len + 2
+            
+    wb.save(volledig_pad)
+    return volledig_pad
