@@ -48,6 +48,7 @@ De applicatie kijkt naar `settings.py` voor het databasepad.
 
 ## 📁 Projectstructuur
 
+```text
 python-project/
 ├── data/                    # Map voor databases (bevat sample_data.db)
 ├── exports/                 # Map voor Excel-exports (automatisch aangemaakt)
@@ -61,8 +62,7 @@ python-project/
 ├── main.py                  # Hoofdmenu van de applicatie (CLI)
 ├── settings_example.py      # Voorbeeldinstellingen voor de docent
 ├── requirements.txt         # Lijst met externe bibliotheken (openpyxl)
-└── .gitignore               # Vertelt git welke bestanden te negeren (venv, settings.py)
-
+└── .gitignore               # Vertelt git welke bestanden te negeren
 
 
 ## 📝 Auteur
