@@ -6,14 +6,14 @@ Command-line interface voor video- en prestatie management.
 
 import sqlite3
 from modules.database import create_tables
-from modules.video_DataAccess import (
+from modules.video_data_access import (
     video_toevoegen,
     videos_ophalen,
     video_ophalen_op_id,
     video_updaten,
     video_verwijderen
 )
-from modules.prestatie_DataAccess import (
+from modules.prestatie_data_access import (
     prestatie_toevoegen,
     prestaties_ophalen,
     prestatie_ophalen_op_id,
@@ -77,7 +77,7 @@ def vraag_video_gegevens():
 
 def toon_videos():
     """Toont alle videos in een geformateerde tabel."""
-    videos = videos_ophalen()  # Krijgt nu Video objecten!
+    videos = videos_ophalen()  
     
     if len(videos) == 0:
         print("\n❌ Geen videos gevonden.")
@@ -100,7 +100,7 @@ def update_video_flow():
     if video_id is None:
         return
 
-    huidige = video_ophalen_op_id(video_id)  # Krijgt nu Video object!
+    huidige = video_ophalen_op_id(video_id)  
     if huidige is None:
         print("❌ Geen video gevonden met dit id.")
         return
@@ -129,7 +129,7 @@ def delete_video_flow():
     if video_id is None:
         return
 
-    huidige = video_ophalen_op_id(video_id)  # Krijgt nu Video object!
+    huidige = video_ophalen_op_id(video_id) 
     if huidige is None:
         print("❌ Geen video gevonden met dit id.")
         return
@@ -184,7 +184,7 @@ def vraag_prestatie_gegevens():
 
 def toon_prestaties():
     """Toont alle prestaties in een geformateerde tabel."""
-    prestaties = prestaties_ophalen()  # Krijgt nu Prestatie objecten!
+    prestaties = prestaties_ophalen()  
     
     if len(prestaties) == 0:
         print("\n❌ Geen prestaties gevonden.")
@@ -206,7 +206,7 @@ def update_prestatie_flow():
     if prestatie_id is None:
         return
 
-    huidige = prestatie_ophalen_op_id(prestatie_id)  # Krijgt nu Prestatie object!
+    huidige = prestatie_ophalen_op_id(prestatie_id) 
     if huidige is None:
         print("❌ Geen prestatie gevonden met dit id.")
         return
@@ -259,7 +259,7 @@ def delete_prestatie_flow():
     if prestatie_id is None:
         return
 
-    huidige = prestatie_ophalen_op_id(prestatie_id)  # Krijgt nu Prestatie object!
+    huidige = prestatie_ophalen_op_id(prestatie_id)  
     if huidige is None:
         print("❌ Geen prestatie gevonden met dit id.")
         return

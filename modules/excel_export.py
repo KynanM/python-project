@@ -9,9 +9,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from datetime import datetime
 from modules.video_DataAccess import videos_ophalen
 from modules.prestatie_DataAccess import prestaties_ophalen
-
-# De map waarin alle excels worden opgeslagen
-EXPORT_DIR = "exports"
+from settings import EXPORT_DIR
 
 def _format_header(ws, row_num):
     """Formatteer de header-rij met vet lettertype en achtergrondkleur."""
