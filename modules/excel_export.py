@@ -7,8 +7,8 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from datetime import datetime
-from modules.video_DataAccess import videos_ophalen
-from modules.prestatie_DataAccess import prestaties_ophalen
+from modules.video_data_access import videos_ophalen
+from modules.prestatie_data_access import prestaties_ophalen
 from settings import EXPORT_DIR
 
 def _format_header(ws, row_num):
