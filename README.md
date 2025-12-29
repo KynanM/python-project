@@ -37,6 +37,8 @@ pip install -r requirements.txt
   DATABASE_PATH = "data/sample_data.db"
   EXPORT_DIR = "exports"
   ```
+- De gegeven voorbeelddata via Toledo zet je in de directory data/ (sample_data.db)
+
 
 4. **Starten**:
 
