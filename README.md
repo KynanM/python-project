@@ -60,8 +60,8 @@ python-project/
 │   ├── __init__.py          # Maakt van deze map een package
 │   ├── database.py          # Database connectie & tabel creatie
 │   ├── models.py            # Classes (Video en Prestatie)
-│   ├── video_DataAccess.py     # Database functies voor video's
-│   ├── prestatie_DataAccess.py # Database functies voor prestaties
+│   ├── video_data_access.py     # Database functies voor video's
+│   ├── prestatie_data_access.py # Database functies voor prestaties
 │   └── excel_export.py         # Logica voor Excel rapportages
 ├── main.py                  # Hoofdmenu van de applicatie (CLI)
 ├── settings_example.py      # Voorbeeldinstellingen voor de docent
@@ -70,4 +70,4 @@ python-project/
 
 
 ## 📝 Auteur
-Ontwikkeld door **KynanM** als eindopdracht voor de cursus Python [file:1].
+Ontwikkeld door **KynanM** als eindopdracht voor de cursus Python.
