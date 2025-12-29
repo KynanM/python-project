@@ -69,7 +69,7 @@ python-project/
 ├── settings_example.py      # Voorbeeldinstellingen voor de docent
 ├── requirements.txt         # Lijst met externe bibliotheken (openpyxl)
 └── .gitignore               # Vertelt git welke bestanden te negeren
-
+```
 
 ## 📝 Auteur
 Ontwikkeld door **KynanM** als eindopdracht voor de cursus Python.
