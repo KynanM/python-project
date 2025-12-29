@@ -1,2 +1,3 @@
 # settings_example.py
-DATABASE_PATH = "data/sample_data.db"
+DATABASE_PATH = "pad"
+EXPORT_DIR = "pad"

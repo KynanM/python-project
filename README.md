@@ -4,10 +4,10 @@ De **AI Video Tracker** is een Python Command Line Interface (CLI) applicatie wa
 
 ## 🚀 Functionaliteiten
 
-- **Video & Performance Management**: Volledige CRUD-ondersteuning voor video's en hun statistieken [file:1].
-- **Data Relaties**: Gekoppelde tabellen via Foreign Keys (één video kan meerdere metingen hebben) [web:7].
-- **Excel Export**: Genereer rapporten met automatische opmaak in een aparte `exports/` map [web:140].
-- **Object-Oriented**: Gebruik van `Video` en `Prestatie` classes voor gestructureerde dataverwerking [file:1].
+- **Video & Performance Management**: Volledige CRUD-ondersteuning voor video's en hun statistieken.
+- **Data Relaties**: Gekoppelde tabellen via Foreign Keys (één video kan meerdere metingen hebben).
+- **Excel Export**: Genereer rapporten met automatische opmaak in een aparte `exports/` map.
+- **Object-Oriented**: Gebruik van `Video` en `Prestatie` classes voor gestructureerde dataverwerking.
 
 ## 🛠️ Snelle Start (Voor de Docent)
 
@@ -24,15 +24,18 @@ cd python-project
 python -m venv venv
 
 Activeer (Windows): .\venv\Scripts\activate
+
 Activeer (Mac/Linux): source venv/bin/activate
+
 pip install -r requirements.txt
 
 
 3. **Configuratie**:
 - Maak een bestand `settings.py` aan in de hoofdmap.
-- Kopieer de volgende regel erin om de voorbeelddata te gebruiken:
+- Kopieer de volgende regels erin om de voorbeelddata te gebruiken:
   ```
   DATABASE_PATH = "data/sample_data.db"
+  EXPORT_DIR = "exports"
   ```
 
 4. **Starten**:
@@ -42,9 +45,10 @@ python main.py
 
 ## ⚙️ Instellingen (settings.py)
 De applicatie kijkt naar `settings.py` voor het databasepad. 
-- Gebruik `data/sample_data.db` voor de evaluatie (bevat reeds data) [file:1].
+- Gebruik `data/sample_data.db` voor de evaluatie (bevat reeds data).
+- Gebruik `EXPORT_DIR = "exports"` voor de exportmap.
 
-*Let op: `settings.py` staat in de `.gitignore` en wordt niet geüpload naar GitHub.* [file:1]
+*Let op: `settings.py` staat in de `.gitignore` en wordt niet geüpload naar GitHub.* 
 
 ## 📁 Projectstructuur
 
